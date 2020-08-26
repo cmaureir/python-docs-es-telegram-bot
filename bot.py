@@ -12,6 +12,8 @@ from lib.web import get_progress, get_progress_details
 from lib.ghub import get_prs, get_prs_details
 from lib.common import clean
 
+from emoji import emojize
+
 
 def control_test(update, context):
     context.bot.send_message(
@@ -89,6 +91,27 @@ def control_prs(update, context):
         disable_web_page_preview=True,
     )
 
+def welcome(update, context):
+    for new_user_obj in update.message.new_chat_members:
+        chat_id = update.message.chat.id
+        new_user = ""
+
+        try:
+            new_user = "@" + new_user_obj['username']
+        except Exception as e:
+            new_user = new_user_obj['first_name'];
+
+        party = emojize(":tada:", use_aliases=True)
+        confetti = emojize(":confetti_ball:", use_aliases=True)
+        urldocs = "https://python-docs-es.readthedocs.io/es/3.8/CONTRIBUTING.html"
+        msg = (f"Yay! se nos une una nueva persona al grupo {party}\n"
+               f"{new_user} recuerda mirar la página para comenzar: {urldocs}\n"
+               f"y espera la bienvenida de los miembros actuales! {confetti}")
+
+        context.bot.send_message(chat_id=chat_id,
+                                 text=msg,
+                                 parse_mode='HTML')
+
 
 if __name__ == "__main__":
     logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -114,5 +137,8 @@ if __name__ == "__main__":
 
     prs_handler = CommandHandler("prs", control_prs, pass_args=True)
     dispatcher.add_handler(prs_handler)
+
+    welcome_handler = MessageHandler(Filters.status_update.new_chat_members, welcome)
+    dispatcher.add_handler(welcome_handler)
 
     updater.start_polling()
