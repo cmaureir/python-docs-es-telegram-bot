@@ -13,12 +13,15 @@ from lib.ghub import get_prs, get_prs_details
 from lib.common import clean
 
 from emoji import emojize
+from pprint import pprint
 
 
 def control_test(update, context):
+    chat_id = str(update.effective_chat.id).replace("-", "\-")
+    pprint(update)
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text="It's working [123](https://google.de)",
+        text=f"It's working [123](https://google.de)\nID:{chat_id}",
         parse_mode=telegram.ParseMode.MARKDOWN_V2,
     )
 
@@ -54,6 +57,15 @@ def get_progress_message(update, context):
 
 def control_progress(update, context):
     msg = get_progress_message(update, context)
+    # In case the message is too long
+    if len(msg) >= 3000:
+        new_msg = ""
+        for i in msg.split("\n"):
+            new_msg += i + "\n"
+            if len(new_msg) > 3000:
+                break
+        msg = new_msg[:]
+        msg += "\n```\n mensaje cortado debido a ser muy largo"
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=msg,

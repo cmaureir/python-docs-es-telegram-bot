@@ -16,6 +16,7 @@ def get_progress_data():
 
     data = {}
     soup = BeautifulSoup(page, features="html.parser")
+    # Get the first <pre> section
     div = soup.findAll("pre")[0]
     lines = [i for i in div.text.split("\n") if i]
 
@@ -50,6 +51,11 @@ def get_progress_data():
             if filename not in data[title]:
                 data[title][filename] = {"entries": entries,
                                          "percentage": percentage}
+
+    # Completed files
+    div = soup.findAll("pre")[1]
+    lines = [i for i in div.text.split("\n") if i]
+    data["Completados"] = {"percentage": len(lines) - 1}
     return data
 
 
@@ -62,8 +68,11 @@ def get_progress():
         return None
     length = max(len(i) for i in data.keys()) + 1
     message = ''.join(f"{key:<{length}}: ({value['percentage']:>5}%)\n"
-                      for key, value in data.items())
-    return f"*Progress*\n```\n{clean(message)}\n```"
+                      for key, value in data.items() if key != "Completados")
+
+    msg = f"*Progress*\n```\n{clean(message)}\n```"
+    msg += f"\nArchivos completados: {data['Completados']['percentage']}"
+    return msg
 
 
 # /progress <TITLE>
@@ -72,7 +81,7 @@ def get_progress_details(title):
     if title not in data:
         return f"Section: *{clean(title)}* not found"
 
-    length = max(len(i) for i in data.keys()) + 3
+    length = max(len(i) for i in data[title].keys()) + 3
     message = ''.join(f"{key:<{length}}: {value['entries']:>9} ({value['percentage']:>5}%)\n"
                       for key, value in data[title].items() if key != "percentage")
     return f"Section *{clean(title)}* {clean(data[title]['percentage'])}%\n```\n{clean(message)}\n```"
