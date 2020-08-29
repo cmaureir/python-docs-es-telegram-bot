@@ -2,3 +2,4 @@ requests
 BeautifulSoup4
 python-telegram-bot
 emoji
+flask
