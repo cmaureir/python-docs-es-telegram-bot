@@ -25,12 +25,29 @@ def control_test(update, context):
         parse_mode=telegram.ParseMode.MARKDOWN_V2,
     )
 
+def control_tutoriales(update, context):
+    chat_id = str(update.effective_chat.id).replace("-", "\-")
+    pprint(update)
+    tv = emojize(":tv:", use_aliases=True)
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=(f"Video tutoriales {tv}:"
+               "\n ▸ [Fork y primeros pasos](https://www.youtube.com/watch?v=OgJQJXrWuu0)"
+               "\n ▸ [Creando un Pull\-request](https://www.youtube.com/watch?v=hbHNTIrxSzk)"
+               "\n ▸ [Revisando Pull\-request](https://www.youtube.com/watch?v=uIaQMTuwtoU)"
+               "\n ▸ [Revisando comentarios en un Pull\-request](https://www.youtube.com/watch?v=SH8HGBPASYY)"
+               ),
+        parse_mode=telegram.ParseMode.MARKDOWN_V2,
+        disable_web_page_preview=True,
+    )
+
 def control_help(update, context):
     msg = (f"Usage:"
-           f"\n\t/progress : to get a general summary"
-           f"\n\t/progress <section> : to get the details of the <section>\n"
-           f"\n\t/prs : to get a list of the open PRs"
-           f"\n\t/prs <ID> : to get the details of the Pull-request <ID>")
+           f"\n\t/progress : resumen general"
+           f"\n\t/progress <section> : resumen de una <section>\n"
+           f"\n\t/prs : lista de todos los PRs abiertos"
+           f"\n\t/prs <ID> : detalles de un PR determinado por <ID>"
+           f"\n\t/tutoriales : lista de video tutoriales")
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=clean(msg),
@@ -115,7 +132,7 @@ def welcome(update, context):
 
         party = emojize(":tada:", use_aliases=True)
         confetti = emojize(":confetti_ball:", use_aliases=True)
-        urldocs = "https://python-docs-es.readthedocs.io/es/3.8/CONTRIBUTING.html"
+        urldocs = "https://python-docs-es.readthedocs.io/es/3.10/CONTRIBUTING.html"
         msg = (f"Yay! se nos une una nueva persona al grupo {party}\n"
                f"{new_user} recuerda mirar la página para comenzar: {urldocs}\n"
                f"y espera la bienvenida de los miembros actuales! {confetti}")
@@ -149,6 +166,9 @@ if __name__ == "__main__":
 
     prs_handler = CommandHandler("prs", control_prs, pass_args=True)
     dispatcher.add_handler(prs_handler)
+
+    tutoriales_handler = CommandHandler("tutoriales", control_tutoriales, pass_args=True)
+    dispatcher.add_handler(tutoriales_handler)
 
     welcome_handler = MessageHandler(Filters.status_update.new_chat_members, welcome)
     dispatcher.add_handler(welcome_handler)
