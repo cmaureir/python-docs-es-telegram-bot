@@ -28,7 +28,7 @@ def control_test(update, context):
 def control_tutoriales(update, context):
     chat_id = str(update.effective_chat.id).replace("-", "\-")
     pprint(update)
-    tv = emojize(":tv:", use_aliases=True)
+    tv = emojize(":tv:", language="alias")
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=(f"Video tutoriales {tv}:"
@@ -130,8 +130,8 @@ def welcome(update, context):
         except Exception as e:
             new_user = new_user_obj['first_name'];
 
-        party = emojize(":tada:", use_aliases=True)
-        confetti = emojize(":confetti_ball:", use_aliases=True)
+        party = emojize(":tada:", language="alias")
+        confetti = emojize(":confetti_ball:", language="alias")
         urldocs = "https://python-docs-es.readthedocs.io/es/3.10/CONTRIBUTING.html"
         msg = (f"Yay! se nos une una nueva persona al grupo {party}\n"
                f"{new_user} recuerda mirar la página para comenzar: {urldocs}\n"

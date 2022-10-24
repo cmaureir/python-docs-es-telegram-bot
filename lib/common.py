@@ -7,5 +7,7 @@ def clean(s):
              .replace(")", "\)")
              .replace("_", "\_")
              .replace("-", "\-")
+             .replace("~", "\~")
+             .replace("+", "\+")
              .replace("<", "\<")
              .replace(">", "\>"))

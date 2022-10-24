@@ -1,4 +1,4 @@
 requests
 BeautifulSoup4
 python-telegram-bot
-emoji
+emoji==2.1.0

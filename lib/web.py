@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from lib.common import clean
 
 def get_progress_data():
-    purl = "https://python-docs-es.readthedocs.io/es/3.8/progress.html"
+    purl = "https://python-docs-es.readthedocs.io/es/3.10/progress.html"
     r = requests.get(purl)
     if r.status_code != 200:
         return None
