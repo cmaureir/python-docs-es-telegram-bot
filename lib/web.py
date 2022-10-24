@@ -1,8 +1,10 @@
 import re
+
 import requests
 from bs4 import BeautifulSoup
 
 from lib.common import clean
+
 
 def get_progress_data():
     purl = "https://python-docs-es.readthedocs.io/es/3.10/progress.html"
@@ -57,8 +59,6 @@ def get_progress_data():
     lines = [i for i in div.text.split("\n") if i]
     data["Completados"] = {"percentage": len(lines) - 1}
     return data
-
-
 
 
 # /progress

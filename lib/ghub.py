@@ -2,6 +2,7 @@ import requests
 
 from lib.common import clean
 
+
 def get_prs_data():
     gurl = "https://api.github.com/repos/python/python-docs-es/pulls"
     params = dict(state="open")
@@ -10,6 +11,7 @@ def get_prs_data():
         print("WARNING: Empty request")
         return None
     return r.json()
+
 
 # /prs
 def get_prs():
@@ -30,4 +32,3 @@ def get_prs_details(pr_id):
                        f"{clean(pr['html_url'])}\n")
             return message
     return f"PR *\#{pr_id}* not found"
-

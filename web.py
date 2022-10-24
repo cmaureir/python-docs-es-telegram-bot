@@ -1,9 +1,7 @@
+import configparser
 import hashlib
 import hmac
-import json
-import configparser
 import urllib.parse
-from pprint import pprint
 
 import requests
 from emoji import emojize
@@ -17,6 +15,7 @@ config.read("config.ini")
 TOKEN = config["DEFAULT"]["arigato"]
 SECRET = config["DEFAULT"]["shhh"]
 CHAT_ID = config["DEFAULT"]["donde"]
+
 
 def opened_pr_msg(pr):
     mega = emojize(":mega:", use_aliases=True)
@@ -32,8 +31,10 @@ def opened_pr_msg(pr):
 
 def merged_pr_msg(pr):
     docs_url = "https://python-docs-es.readthedocs.io/es/3.8/CONTRIBUTING.html"
-    twit_msg = (f"Acabo de contribuir a Python con una traducción al español"
-                f" del archivo: {pr['html_url']} #PythonDocsEs ¡Únete a la iniciativa! {docs_url}")
+    twit_msg = (
+        f"Acabo de contribuir a Python con una traducción al español"
+        f" del archivo: {pr['html_url']} #PythonDocsEs ¡Únete a la iniciativa! {docs_url}"
+    )
     base_url = "https://twitter.com/intent/tweet?text="
     url_twit = f"{base_url}{urllib.parse.quote(twit_msg)}"
     clap = emojize(":clap:", use_aliases=True)
@@ -73,15 +74,13 @@ def respond():
     if not signature or not signature.startswith("sha1="):
         abort(400, "X-Hub-Signature required")
 
-    digest = hmac.new(
-        SECRET.encode("utf-8"), request.data, hashlib.sha1
-    ).hexdigest()
+    digest = hmac.new(SECRET.encode("utf-8"), request.data, hashlib.sha1).hexdigest()
 
     if not hmac.compare_digest(signature, f"sha1={digest}"):
         abort(400, "Invalid Signature")
 
     data = request.json
-    msg = process_data(request.json)
+    msg = process_data(data)
     print(msg)
     if msg:
         status = send_message(msg)

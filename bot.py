@@ -1,19 +1,14 @@
-import os
-import re
-import logging
 import configparser
+import logging
+from pprint import pprint
 
 import telegram
-from telegram.ext import Updater
-from telegram.ext import MessageHandler, Filters
-from telegram.ext import CommandHandler
-
-from lib.web import get_progress, get_progress_details
-from lib.ghub import get_prs, get_prs_details
-from lib.common import clean
-
 from emoji import emojize
-from pprint import pprint
+from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
+
+from lib.common import clean
+from lib.ghub import get_prs, get_prs_details
+from lib.web import get_progress, get_progress_details
 
 
 def control_test(update, context):
@@ -25,29 +20,33 @@ def control_test(update, context):
         parse_mode=telegram.ParseMode.MARKDOWN_V2,
     )
 
+
 def control_tutoriales(update, context):
-    chat_id = str(update.effective_chat.id).replace("-", "\-")
     pprint(update)
     tv = emojize(":tv:", language="alias")
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=(f"Video tutoriales {tv}:"
-               "\n ▸ [Fork y primeros pasos](https://www.youtube.com/watch?v=OgJQJXrWuu0)"
-               "\n ▸ [Creando un Pull\-request](https://www.youtube.com/watch?v=hbHNTIrxSzk)"
-               "\n ▸ [Revisando Pull\-request](https://www.youtube.com/watch?v=uIaQMTuwtoU)"
-               "\n ▸ [Revisando comentarios en un Pull\-request](https://www.youtube.com/watch?v=SH8HGBPASYY)"
-               ),
+        text=(
+            f"Video tutoriales {tv}:"
+            "\n ▸ [Fork y primeros pasos](https://www.youtube.com/watch?v=OgJQJXrWuu0)"
+            "\n ▸ [Creando un Pull\-request](https://www.youtube.com/watch?v=hbHNTIrxSzk)"
+            "\n ▸ [Revisando Pull\-request](https://www.youtube.com/watch?v=uIaQMTuwtoU)"
+            "\n ▸ [Revisando comentarios en un Pull\-request](https://www.youtube.com/watch?v=SH8HGBPASYY)"
+        ),
         parse_mode=telegram.ParseMode.MARKDOWN_V2,
         disable_web_page_preview=True,
     )
 
+
 def control_help(update, context):
-    msg = (f"Usage:"
-           f"\n\t/progress : resumen general"
-           f"\n\t/progress <section> : resumen de una <section>\n"
-           f"\n\t/prs : lista de todos los PRs abiertos"
-           f"\n\t/prs <ID> : detalles de un PR determinado por <ID>"
-           f"\n\t/tutoriales : lista de video tutoriales")
+    msg = (
+        "Usage:"
+        "\n\t/progress : resumen general"
+        "\n\t/progress <section> : resumen de una <section>\n"
+        "\n\t/prs : lista de todos los PRs abiertos"
+        "\n\t/prs <ID> : detalles de un PR determinado por <ID>"
+        "\n\t/tutoriales : lista de video tutoriales"
+    )
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=clean(msg),
@@ -64,13 +63,16 @@ def get_progress_message(update, context):
     if arg == "":
         msg = get_progress()
     elif arg == "help":
-        msg = (f"usage:"
-               f"\n\t/progress : to get a general summary"
-               f"\n\t/progress <section> : to get the details of the <section>")
+        msg = (
+            "usage:"
+            "\n\t/progress : to get a general summary"
+            "\n\t/progress <section> : to get the details of the <section>"
+        )
     else:
         msg = get_progress_details(arg)
 
     return msg
+
 
 def control_progress(update, context):
     msg = get_progress_message(update, context)
@@ -90,10 +92,13 @@ def control_progress(update, context):
         disable_web_page_preview=True,
     )
 
+
 def get_prs_message(update, context):
-    update_msg = (f"Usage:"
-                  f"\n\t/prs : to get a list of the open PRs"
-                  f"\n\t/prs <ID> : to get the details of the Pull-request <ID>")
+    update_msg = (
+        "Usage:"
+        "\n\t/prs : to get a list of the open PRs"
+        "\n\t/prs <ID> : to get the details of the Pull-request <ID>"
+    )
     try:
         arg = context.args[0]
     except IndexError:
@@ -111,6 +116,7 @@ def get_prs_message(update, context):
 
     return msg
 
+
 def control_prs(update, context):
     msg = get_prs_message(update, context)
     context.bot.send_message(
@@ -120,31 +126,34 @@ def control_prs(update, context):
         disable_web_page_preview=True,
     )
 
+
 def welcome(update, context):
     for new_user_obj in update.message.new_chat_members:
         chat_id = update.message.chat.id
         new_user = ""
 
         try:
-            new_user = "@" + new_user_obj['username']
+            new_user = "@" + new_user_obj["username"]
         except Exception as e:
-            new_user = new_user_obj['first_name'];
+            new_user = new_user_obj["first_name"]
+            print(e)
 
         party = emojize(":tada:", language="alias")
         confetti = emojize(":confetti_ball:", language="alias")
         urldocs = "https://python-docs-es.readthedocs.io/es/3.10/CONTRIBUTING.html"
-        msg = (f"Yay! se nos une una nueva persona al grupo {party}\n"
-               f"{new_user} recuerda mirar la página para comenzar: {urldocs}\n"
-               f"y espera la bienvenida de los miembros actuales! {confetti}")
+        msg = (
+            f"Yay! se nos une una nueva persona al grupo {party}\n"
+            f"{new_user} recuerda mirar la página para comenzar: {urldocs}\n"
+            f"y espera la bienvenida de los miembros actuales! {confetti}"
+        )
 
-        context.bot.send_message(chat_id=chat_id,
-                                 text=msg,
-                                 parse_mode='HTML')
+        context.bot.send_message(chat_id=chat_id, text=msg, parse_mode="HTML")
 
 
 if __name__ == "__main__":
-    logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-                        level=logging.INFO)
+    logging.basicConfig(
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+    )
 
     config = configparser.ConfigParser()
     config.read("config.ini")
